@@ -1,0 +1,9 @@
+torch
+torchvision
+pathlib 
+matplotlib
+numpy
+argparse
+tqdm
+pillow
+gdown
