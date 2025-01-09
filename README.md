@@ -1,6 +1,8 @@
 # GANs 
 Generative Adversarial Network Implementing
 
+![Alt text](epoch24.png "Image Generated At Epoch 24")
+
 ### Table of contents
 
 - [Installation](#installation)
