@@ -1,7 +1,9 @@
 # GANs 
 Generative Adversarial Network Implementing
 
-![Alt text](epoch24.png "Image Generated At Epoch 24")
+<div align="center">
+    <img src="epoch24.png" alt="Image Generated At Epoch 24" title="Image Generated At Epoch 24">
+</div>
 
 ### Table of contents
 
