@@ -67,7 +67,7 @@ class Discriminator(nn.Module):
     - gap: (1024)
     - tanh: (1024)
     
-    * Output (with bath_size): tensor(1, 1024)
+    * Output (with batch_size): tensor(1, 1024)
     
     """
 
@@ -86,7 +86,6 @@ class Discriminator(nn.Module):
         self.conv4 = nn.Conv2d(in_channels=512, out_channels=1024, kernel_size=4, stride=2, padding=1)
         self.bn4 = nn.BatchNorm2d(1024)
 
-        self.gap = nn.AdaptiveAvgPool2d((1, 1))
         self.linear = nn.Linear(1024, 1)
 
         self.lkrelu = nn.LeakyReLU(0.2)
@@ -103,50 +102,8 @@ class Discriminator(nn.Module):
 
         return img
 
-# class Discriminator(nn.Module):
-
-#     """ 
-#     Tensor Size In After Discriminator's Layers (no batch_size)
-
-#     - initial: (3, img_size, img_size)
-#     - conv1: (128, img_size // 2, img_size // 2)
-#     - conv2: (256, img_size // 4, img_size // 4)
-#     - conv3: (512, img_size // 8, img_size // 8)
-#     - conv4: (1024, img_size // 16, img_size / 1)
-#     - gap: (1024)
-#     - tanh: (1024)
-    
-#     * Output (with bath_size): tensor(1, 1024)
-    
-#     """
-
-#     def __init__(self):
-#         super(Discriminator, self).__init__()
-
-#         self.conv1 = nn.Conv2d(in_channels=3, out_channels=128, kernel_size=4, stride=2, padding=1)
-#         self.bn1 = nn.BatchNorm2d(128)
-
-#         self.conv2 = nn.Conv2d(in_channels=128, out_channels=256, kernel_size=4, stride=2, padding=1)
-#         self.bn2 = nn.BatchNorm2d(256)
-
-#         self.conv3 = nn.Conv2d(in_channels=256, out_channels=512, kernel_size=4, stride=2, padding=1)
-#         self.bn3 = nn.BatchNorm2d(512)
-
-#         self.conv4 = nn.Conv2d(in_channels=512, out_channels=1024, kernel_size=4, stride=2, padding=1)
-#         self.bn4 = nn.BatchNorm2d(1024)
-
-#         self.conv5 = nn.Conv2d(in_channels=1024, out_channels=1, kernel_size=4, stride=1, padding=0)
-
-#         self.lkrelu = nn.LeakyReLU(0.2)
-        
-#     def forward(self, img):
-#         img = self.lkrelu(self.bn1(self.conv1(img)))
-#         img = self.lkrelu(self.bn2(self.conv2(img)))
-#         img = self.lkrelu(self.bn3(self.conv3(img)))
-#         img = self.lkrelu(self.bn4(self.conv4(img)))
-#         img = self.conv5(img)
-        
-#         img = torch.sigmoid(img)
-#         print(img.shape)
-
-#         return img
+""" 
+Try:
+1. Add dropout to Discriminator
+2.  
+"""
