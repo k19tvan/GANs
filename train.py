@@ -18,11 +18,11 @@ import copy
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# mean = torch.tensor([0.485, 0.456, 0.406])
-# std = torch.tensor([0.229, 0.224, 0.225])
+mean = torch.tensor([0.485, 0.456, 0.406])
+std = torch.tensor([0.229, 0.224, 0.225])
 
-mean = torch.tensor([0.5, 0.5, 0.5])    
-std = torch.tensor([0.5, 0.5, 0.5])
+# mean = torch.tensor([0.5, 0.5, 0.5])    
+# std = torch.tensor([0.5, 0.5, 0.5])
 
 def imshow(image):
 
@@ -54,9 +54,10 @@ def parse_args():
     parser.add_argument('--lr', type=float, default=0.0002)
     parser.add_argument('--beta1', type=float, default='0.5')
     parser.add_argument('--beta2', type=float, default='0.999')
-    parser.add_argument('--latent_dim', type=int, default=70)
+    parser.add_argument('--latent_dim', type=int, default=100)
     parser.add_argument('--img_size', type=int, default=64)
     parser.add_argument('--save_period', type=int, default=1)
+    parser.add_argument('--data', type=str, default="cats")
     
     return parser.parse_args()
 
@@ -70,6 +71,7 @@ beta1 = args.beta1
 beta2 = args.beta2
 latent_dim = args.latent_dim
 img_size = args.img_size
+data = args.data
 save_period = args.save_period
 
 """ Transforms """
@@ -82,16 +84,12 @@ transform = transforms.Compose([
 
 """ Dataloader """
 
-data_dir = Path('cats')  
+data_dir = Path(data)  
 dataset = CustomDataset(root_dir=data_dir, transform=transform)
 dataloader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=shuffle, num_workers=num_workers)
 
 imageIter = iter(dataloader)
 images = imageIter.__next__()
-
-for i, image in enumerate(images):
-    imshow(image)
-    if i >= 2: break
 
 """ Model """
 
@@ -129,8 +127,6 @@ def training():
                 optimizer_D.zero_grad()
                 z = torch.randn(batch_size, latent_dim).to(device)
                 fake_imgs = generator(z).to(device).detach()
-
-                # print(valid.shape)
 
                 real_loss = adversarial_loss(discriminator(real_imgs), valid)
                 fake_loss = adversarial_loss(discriminator(fake_imgs), fake)
@@ -171,6 +167,7 @@ def training():
 
                     img = grid.permute(1, 2, 0).numpy() * 255
 
+                    print(cnt + 1) 
                     cur_dir = run_dir/Path(f"run{cnt + 1}")
                     cur_dir.mkdir(parents=True, exist_ok=True)
 
@@ -191,6 +188,7 @@ if __name__ == '__main__':
     print(f"beta2 = {beta2}")
     print(f"latent_dim = {latent_dim}")
     print(f"img_size = {img_size}")
+    print(f"data = {data}")
     print(f"save_period = {save_period}")
 
     print()

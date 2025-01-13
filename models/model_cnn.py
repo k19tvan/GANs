@@ -1,6 +1,7 @@
 import torch.nn as nn
 import torch
-
+from math import *
+        
 class Generator(nn.Module):
 
     """ 
@@ -37,7 +38,7 @@ class Generator(nn.Module):
         self.bn3 = nn.BatchNorm2d(num_features=128)
 
         self.deconv4 = nn.ConvTranspose2d(in_channels=128, out_channels=3, kernel_size=4, stride=2, padding=1)
-        self.bn4 = nn.BatchNorm2d(num_features=3)
+        self.bn4 = nn.BatchNorm2d(num_features=64)
 
         self.relu = nn.ReLU()
 
@@ -67,7 +68,7 @@ class Discriminator(nn.Module):
     - gap: (1024)
     - tanh: (1024)
     
-    * Output (with batch_size): tensor(1, 1024)
+    * Output (with bath_size): tensor(1, 1024)
     
     """
 
@@ -86,15 +87,26 @@ class Discriminator(nn.Module):
         self.conv4 = nn.Conv2d(in_channels=512, out_channels=1024, kernel_size=4, stride=2, padding=1)
         self.bn4 = nn.BatchNorm2d(1024)
 
-        self.linear = nn.Linear(1024, 1)
+        self.conv5 = nn.Conv2d(in_channels=1024, out_channels=2048, kernel_size=4, stride=2, padding=1)
 
+        self.dropout = nn.Dropout(0.3)
         self.lkrelu = nn.LeakyReLU(0.2)
+        self.linear = nn.Linear(2048, 1)
+
         
     def forward(self, img):
-        img = self.lkrelu(self.bn1(self.conv1(img)))
-        img = self.lkrelu(self.bn2(self.conv2(img)))
-        img = self.lkrelu(self.bn3(self.conv3(img)))
-        img = self.lkrelu(self.bn4(self.conv4(img)))
+        
+        img = self.dropout(self.lkrelu(self.bn1(self.conv1(img))))
+        img = self.dropout(self.lkrelu(self.bn2(self.conv2(img))))
+        img = self.dropout(self.lkrelu(self.bn3(self.conv3(img))))
+        img = self.bn4(self.conv4(img))
+
+        """ Minibatch Standard Deviation """
+
+        std = torch.std(img, dim=0, keepdim=True)
+        std_mean = std.mean()
+        std_map = std_mean.expand(img.shape)
+        img = torch.cat([img, std_map], dim=1)
 
         img = torch.mean(img, dim=(2, 3))
         img = self.linear(img)
@@ -102,8 +114,3 @@ class Discriminator(nn.Module):
 
         return img
 
-""" 
-Try:
-1. Add dropout to Discriminator
-2.  
-"""
